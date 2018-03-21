@@ -97,10 +97,10 @@ var data = {
     }
 }
 
-TRUNK_LEMMATA = 3
-THREAD_DIST = 5
-TRUNK_HEIGHT = 100
-CROWN_SIZE = 100
+TRUNK_LEMMATA = 3;
+THREAD_DIST = 50;
+TRUNK_HEIGHT = 200;
+CROWN_SIZE = 200;
 TREE_SPREAD_DEG = 200;
 
 var svg;
@@ -226,21 +226,33 @@ function getDistBetweenContinuousThreads(branch, threadCountPerBranch)
     return Math.max(Math.floor(distBetweenThreads), 1);
 }
 
-function drawBranches(branch, threadCountPerBranch, dx)
+function fillUpThreads(branch, continuousThreads, threadCountPerBranch, dx, degDistance)
 {
+    for(var i=continuousThreads.length;i<threadCountPerBranch;i++)
+    {
+        continuousThreads.push([[branch, dx, i]]);
+        dx += degDistance;
+    }
+    return continuousThreads;   
+}
+
+function isThreadToBeContinued(i, j, continuousThreads, threadCountPerBranch, distBetweenContinuousThreads)
+{
+    return (i*threadCountPerBranch+j) % distBetweenContinuousThreads == 0 && continuousThreads.length < threadCountPerBranch+1;
+}
+
+function drawBranches(branch, threadCountPerBranch)
+{
+    var degDistance = TREE_SPREAD_DEG/10;
+   
     var continuousThreads = [];
     if (!branch.langs) 
     {
-        for(var i=0;i<threadCountPerBranch;i++)
-        {
-            continuousThreads.push([[branch, dx, i]]);
-            dx += THREAD_DIST;
-        }
-        return continuousThreads;    
+        return fillUpThreads(branch, continuousThreads, threadCountPerBranch, 0, degDistance);         
     }
     
     var distBetweenContinuousThreads = getDistBetweenContinuousThreads(branch, threadCountPerBranch);
-    dx = -(threadCountPerBranch*branch.langs.length-1)*THREAD_DIST/2+dx;    
+    var dx = -degDistance * (threadCountPerBranch*branch.langs.length-1) / 2;
 
     for (var i=0;i<branch.langs.length;i++)
     {
@@ -249,7 +261,7 @@ function drawBranches(branch, threadCountPerBranch, dx)
         for(var j=0;j<threads.length;j++)
         {
             threads[j].push([branch, dx, j]);
-            if (branch != data.tree && i*threadCountPerBranch+j % distBetweenContinuousThreads == 0 && continuousThreads.length <= threadCountPerBranch)
+            if (branch != data.tree && isThreadToBeContinued(i, j, continuousThreads, threadCountPerBranch, distBetweenContinuousThreads))
             {
                 continuousThreads.push(threads[j]);
             }
@@ -257,15 +269,10 @@ function drawBranches(branch, threadCountPerBranch, dx)
             {
                 drawThread(threads[j]);
             }
-            dx += THREAD_DIST;
+            dx += degDistance;
         }
     }
-    for (var i=continuousThreads.length;i<=threadCountPerBranch;i++)
-    {
-        continuousThreads.push([[branch, dx, i]]);
-        dx += THREAD_DIST;
-    }
-    return continuousThreads;
+    return fillUpThreads(branch, continuousThreads, threadCountPerBranch, dx, degDistance);
 }
 
 function toSvgDString(data, cmds)
@@ -288,74 +295,101 @@ function orderBranch(thread)
     return false;
 }
 
-function applyOffset(branchWithOffsetArr)
+function applyOffset(thread, i)
 {
-    var x = branchWithOffsetArr[0].pos[0]+branchWithOffsetArr[1];
-    return [x, branchWithOffsetArr[0].pos[1]+branchWithOffsetArr[1]];
+    var deg = thread[i][1]/180*Math.PI;
+    var x = Math.sin(deg)*THREAD_DIST;
+    var y = -Math.cos(deg)*THREAD_DIST;
+    
+    var newX = thread[i][0].pos[0]+x;
+    var newY = thread[i][0].pos[1]+y;
+
+    return [newX, newY];
 }
 
-threadId = 0;
-function drawThread(thread)
+function calcPathCoord(thread, i)
 {
-    
+    var dStr = '';
+    if (i > 0)
+    {   
+        var next = applyOffset(thread, i);
+        var x = applyOffset(thread, i-1)[0];
+        x = next[0]+(x-next[0])/2;
+        dStr = toSvgDString([[x,next[1]],next], ['Q', ',']);
+    }
+    else
+    {
+        dStr = toSvgDString([applyOffset(thread, 0)], ['M']);
+    }
+    return dStr;
+}
+
+function makePath(threadId)
+{
     var path = svgElement('path');
     path.setAttribute('id', 'i'+threadId);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'black');
+    defs.appendChild(path);
 
-  // console.log(thread);
-   
+    return path;
+}
 
+function makeTextPath(thread, threadId)
+{
     var text = svgElement('text');
     var textPath = svgElement('textPath');
+    
     textPath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#i'+threadId);
+    textPath.setAttribute('spacing', 'auto');
     if (!orderBranch(thread))
     {
         textPath.setAttribute('startOffset', '100%');
         textPath.setAttribute('style', 'text-anchor:end');
     }
 
-    var dStr = '';
-
-    for (var i=0;i<thread.length;i++)
-    {
-        if (i > 0)
-        {   
-            var x = applyOffset(thread[i-1])[0];
-            var next = applyOffset(thread[i]);
-            dStr += toSvgDString([[x,next[1]],next], ['Q', ',']);
-        }
-        else
-        {
-            dStr = toSvgDString([applyOffset(thread[0])], ['M']);
-        }
-       
-
-        if (thread[i][0].lemmata == undefined|| thread[i][0].lemmata.length <= thread[i][2]) continue;
-       
-        var lemma = thread[i][0].lemmata[thread[i][2]];
-       console.log(thread[i][0].lemmata, thread[i][2], lemma);
-        var span = svgElement('tspan');
-        span.setAttribute('fill', lemma.color);
-        span.innerHTML = lemma.w;
-        textPath.appendChild(span);
-    }
-    //dStr = toSvgDString([from, [0, dir[1]], [0, 0], [dir[0], 0]], ['M', 'c', ',', ',']);
-    path.setAttribute('d', dStr);
-    defs.appendChild(path);
-    
     text.appendChild(textPath);
     svg.appendChild(text);
-    threadId++;
+
     return textPath;
 }
 
+function makeTspan(thread, i)
+{
+    var lemma = thread[i][0].lemmata[thread[i][2]];
+    var span = svgElement('tspan');
+    span.setAttribute('fill', lemma.color);
+    span.setAttribute('dy', '2');
+    span.innerHTML = '&nbsp;&nbsp;&nbsp;'+lemma.w;
+
+    return span;
+}
+
+threadCounter = 0;
+function drawThread(thread)
+{    
+    var path = makePath(threadCounter);
+    var textPath = makeTextPath(thread, threadCounter);
+    
+    var dStr = '';
+    for (var i=0;i<thread.length;i++)
+    {
+        dStr += calcPathCoord(thread, i);
+        if (thread[i][0].lemmata == undefined || thread[i][0].lemmata.length <= thread[i][2]) continue;
+        var span = makeTspan(thread, i);
+        textPath.appendChild(span);
+    }
+
+    path.setAttribute('d', dStr);    
+    
+    threadCounter++;
+    return textPath;
+}
 
 function svgElement(name)
 {
     return document.createElementNS('http://www.w3.org/2000/svg', name);
 }
-
-
-
 
 function initSvg()
 {
@@ -366,7 +400,7 @@ function initSvg()
     defs = svgElement('defs');
 
     svg.appendChild(defs);
-   // defs = svg;
+    //defs = svg;
     document.body.appendChild(svg);
 }
 
@@ -375,7 +409,7 @@ function drawTree()
     initSvg();
     fillTreeWithLemmata(data.tree.langs[0], 0);
     calcTreePos();
-console.log(data.tree);
+    console.log(data.tree);
     
     drawBranches(data.tree, TRUNK_LEMMATA, 0);
 }
