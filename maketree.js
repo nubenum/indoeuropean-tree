@@ -150,8 +150,8 @@ function fillTreeWithLemmata(branch, depth)
 {
     var neededLemmata = Math.max(TRUNK_LEMMATA - depth, 1);
     
-    //branch.lemmata = getRandomLemmataForLang(branch.l, neededLemmata);
-    branch.lemmata = getAllLemmataForLang(branch.l);
+    branch.lemmata = getRandomLemmataForLang(branch.l, neededLemmata);
+    //branch.lemmata = getAllLemmataForLang(branch.l);
     
     if (!branch.langs) return;
     for (var i=0;i<branch.langs.length;i++)
@@ -335,19 +335,38 @@ function makePath(threadId)
     return path;
 }
 
-function makeTextPath(thread, threadId)
+function makeTextPath(isReversed, startAt, threadId)
 {
     var text = svgElement('text');
     var textPath = svgElement('textPath');
+    var animate = svgElement('animate');
+    var set = svgElement('set');
     
     textPath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#i'+threadId);
     textPath.setAttribute('spacing', 'auto');
-    if (!orderBranch(thread))
+    animate.setAttribute('attributeName', 'startOffset');
+    animate.setAttribute('begin', startAt+'s');
+    animate.setAttribute('dur', (3)+'s'); 
+    set.setAttribute('attributeName', 'startOffset');
+    set.setAttribute('begin', '0s');
+    set.setAttribute('dur', startAt+'s');     
+
+    if (!isReversed)
     {
         textPath.setAttribute('startOffset', '100%');
         textPath.setAttribute('style', 'text-anchor:end');
+        animate.setAttribute('from', '200%');
+        animate.setAttribute('to', '100%');
+        set.setAttribute('to', '200%');
     }
-
+    else {
+        animate.setAttribute('from', '-100%');
+        animate.setAttribute('to', '0%');
+        set.setAttribute('to', '-100%');
+    }
+    
+    textPath.appendChild(animate);
+    if (startAt > 0) textPath.appendChild(set);
     text.appendChild(textPath);
     svg.appendChild(text);
 
@@ -368,8 +387,10 @@ function makeTspan(thread, i)
 threadCounter = 0;
 function drawThread(thread)
 {    
+    var isReversed = orderBranch(thread);
+
     var path = makePath(threadCounter);
-    var textPath = makeTextPath(thread, threadCounter);
+    var textPath = makeTextPath(isReversed, 4-thread.length, threadCounter);
     
     var dStr = '';
     for (var i=0;i<thread.length;i++)
