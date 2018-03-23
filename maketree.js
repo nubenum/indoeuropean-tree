@@ -96,7 +96,7 @@ var data = {
     }
 }
 
-GLYPH_SIZE = 10;
+GLYPH_SIZE = 8;
 TRUNK_LEMMATA = 3;
 THREAD_DIST = 50;
 TRUNK_HEIGHT = 200;
@@ -110,6 +110,15 @@ var defs;
 function getRandInt(min, max)
 {
     return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function shuffleArray(arr) {
+    for (var i=arr.length-1;i>0;i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
+    }
 }
 
 function getAllLemmataForLang(lang)
@@ -131,35 +140,21 @@ function getAllLemmataForLang(lang)
     return lemmata;
 }
 
-function getRandomLemmataForLang(lang, minCount)
+function getRandomLemmataForLang(lang)
 {
     lemmata = getAllLemmataForLang(lang);
-    if (minCount >= lemmata.length)
-        return lemmata;
-
-    //count = getRandInt(minCount, lemmata.length + 1)
-    count = minCount;
-    randomLemmata = []
-    for (var i=0;i<count;i++)
-    {
-        var lemma = lemmata.splice(getRandInt(0, lemmata.length), 1);
-        randomLemmata.push(lemma[0]);
-    }
-    return randomLemmata;
+    shuffleArray(lemmata);
+    return lemmata;
 }
 
-function fillTreeWithLemmata(branch, depth)
+function fillTreeWithLemmata(branch)
 {
-    //TODO
-    var neededLemmata = Math.max(TRUNK_LEMMATA - depth, 1);
-    
-    //branch.lemmata = getRandomLemmataForLang(branch.l, neededLemmata);
-    branch.lemmata = getAllLemmataForLang(branch.l);
+    branch.lemmata = getRandomLemmataForLang(branch.l);
     
     if (!branch.langs) return;
     for (var i=0;i<branch.langs.length;i++)
     {        
-        fillTreeWithLemmata(branch.langs[i], depth + 1);
+        fillTreeWithLemmata(branch.langs[i]);
     }    
 }
 
@@ -271,8 +266,8 @@ function fillDistWithLemmata(branch, start)
     for(var i=start;i<branch.lemmata.length;i++)
     {
         var lemma = branch.lemmata[i];
-        var diff = dist-coveredLength;
-        if (Math.abs(diff) < Math.abs(diff-lemma.w.length))
+        coveredLength += (lemma.w.length+1)*GLYPH_SIZE;
+        if (coveredLength > branch.dist && i != 0)
         {
             break;
         }
@@ -410,8 +405,8 @@ function makeTextPath(isReversed, startAt, threadId)
         set.setAttribute('to', '-100%');
     }
     
-    textPath.appendChild(animate);
-    if (startAt > 0) textPath.appendChild(set);
+    //textPath.appendChild(animate);
+    //if (startAt > 0) textPath.appendChild(set);
     text.appendChild(textPath);
     svg.appendChild(text);
 
