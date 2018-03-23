@@ -70,7 +70,7 @@ var data = {
                     {
                         "l": "psl" ,
                         "langs": [
-                            {"l": "uk"}, {"l": "ru"}
+                            {"l": "uk"},  {"l": "ru"}
                         ]
                     },
                     {"l": "el"},            
@@ -96,6 +96,7 @@ var data = {
     }
 }
 
+GLYPH_SIZE = 10;
 TRUNK_LEMMATA = 3;
 THREAD_DIST = 50;
 TRUNK_HEIGHT = 200;
@@ -126,6 +127,7 @@ function getAllLemmataForLang(lang)
             }
         }            
     }
+    console.log(lang, lemmata);
     return lemmata;
 }
 
@@ -148,6 +150,7 @@ function getRandomLemmataForLang(lang, minCount)
 
 function fillTreeWithLemmata(branch, depth)
 {
+    //TODO
     var neededLemmata = Math.max(TRUNK_LEMMATA - depth, 1);
     
     //branch.lemmata = getRandomLemmataForLang(branch.l, neededLemmata);
@@ -192,7 +195,16 @@ function calcLeavesPos(branch) {
     }
 }
 
-function calcBranchPos(branch) {
+function euklidianDist(pos1, pos2)
+{
+    return Math.sqrt(
+        Math.pow(pos1[0]-pos2[0], 2) + 
+        Math.pow(pos1[1]-pos2[1], 2)
+    );
+}
+
+function calcBranchPos(branch)
+{
     var x = 0;
     var y = 0;
     var i = 0;
@@ -210,6 +222,11 @@ function calcBranchPos(branch) {
     y += data.tree.pos[1];
     branch.pos = [x/i, y/i];
 
+    for(i=0;i<branch.langs.length;i++)
+    {
+        branch.langs[i].dist = euklidianDist(branch.langs[i].pos, branch.pos);
+    }
+
     drawDot(branch.pos[0], branch.pos[1]);
 }
 
@@ -220,25 +237,48 @@ function calcTreePos()
     calcBranchPos(data.tree);
 }
 
-function getDistBetweenContinuousThreads(branch, threadCountPerBranch)
+function getContinuousThreadsInterval(branch, threadCountPerBranch)
 {
     var distBetweenThreads = branch.langs.length*threadCountPerBranch/(threadCountPerBranch+1);
     return Math.max(Math.floor(distBetweenThreads), 1);
 }
 
-function fillUpThreads(branch, continuousThreads, threadCountPerBranch, dx, degDistance)
+function fillUpThreads(branch, continuousThreads, threadCountPerBranch, threadDeg, degDistance)
 {
+    var lemmata;
+    var lemmataCount = 0;
     for(var i=continuousThreads.length;i<threadCountPerBranch;i++)
     {
-        continuousThreads.push([[branch, dx, i]]);
-        dx += degDistance;
+        lemmata = fillDistWithLemmata(branch, lemmataCount);
+        lemmataCount += lemmata.length;
+        continuousThreads.push([{"branch" : branch, "deg" : threadDeg, "lemmata": lemmata}]);
+        threadDeg += degDistance;
     }
     return continuousThreads;   
 }
 
-function isThreadToBeContinued(i, j, continuousThreads, threadCountPerBranch, distBetweenContinuousThreads)
+function isThreadToBeContinued(i, j, continuousThreads, threadCountPerBranch, continuousThreadsInterval)
 {
-    return (i*threadCountPerBranch+j) % distBetweenContinuousThreads == 0 && continuousThreads.length < threadCountPerBranch+1;
+    return (i*threadCountPerBranch+j) % continuousThreadsInterval == 0 && continuousThreads.length < threadCountPerBranch+1;
+}
+
+function fillDistWithLemmata(branch, start)
+{
+    var dist = branch.dist;
+    var lemmata = [];
+    var coveredLength = 0;
+    console.log(branch);
+    for(var i=start;i<branch.lemmata.length;i++)
+    {
+        var lemma = branch.lemmata[i];
+        var diff = dist-coveredLength;
+        if (Math.abs(diff) < Math.abs(diff-lemma.w.length))
+        {
+            break;
+        }
+        lemmata.push(lemma);
+    }
+    return lemmata;
 }
 
 function drawBranches(branch, threadCountPerBranch)
@@ -251,28 +291,33 @@ function drawBranches(branch, threadCountPerBranch)
         return fillUpThreads(branch, continuousThreads, threadCountPerBranch, 0, degDistance);         
     }
     
-    var distBetweenContinuousThreads = getDistBetweenContinuousThreads(branch, threadCountPerBranch);
-    var dx = -degDistance * (threadCountPerBranch*branch.langs.length-1) / 2;
+    var continuousThreadsInterval = getContinuousThreadsInterval(branch, threadCountPerBranch);
+    var threadDeg = -degDistance * (threadCountPerBranch*branch.langs.length-1) / 2;
+    var lemmata;
+    var lemmataCount = 0;
 
     for (var i=0;i<branch.langs.length;i++)
     {
-        var threads = drawBranches(branch.langs[i], Math.max(threadCountPerBranch-1, 1), dx);
+        var threads = drawBranches(branch.langs[i], Math.max(threadCountPerBranch-1, 1), threadDeg);
         
         for(var j=0;j<threads.length;j++)
-        {
-            threads[j].push([branch, dx, j]);
-            if (branch != data.tree && isThreadToBeContinued(i, j, continuousThreads, threadCountPerBranch, distBetweenContinuousThreads))
+        {            
+            if (branch != data.tree && isThreadToBeContinued(i, j, continuousThreads, threadCountPerBranch, continuousThreadsInterval))
             {
+                lemmata = fillDistWithLemmata(branch, lemmataCount);
+                lemmataCount += lemmata.length;
+                threads[j].push({"branch" : branch, "deg" : threadDeg, "lemmata": lemmata});
                 continuousThreads.push(threads[j]);
             }
             else
             {
+                threads[j].push({"branch" : branch, "deg" : threadDeg, "lemmata": []});
                 drawThread(threads[j]);
             }
-            dx += degDistance;
+            threadDeg += degDistance;
         }
     }
-    return fillUpThreads(branch, continuousThreads, threadCountPerBranch, dx, degDistance);
+    return continuousThreads;
 }
 
 function toSvgDString(data, cmds)
@@ -287,7 +332,7 @@ function toSvgDString(data, cmds)
 
 function orderBranch(thread)
 {
-    if (thread[0][0].pos[0] > thread[thread.length-1][0].pos[0])
+    if (thread[0].branch.pos[0] > thread[thread.length-1].branch.pos[0])
     {
         thread.reverse();
         return true;
@@ -295,14 +340,14 @@ function orderBranch(thread)
     return false;
 }
 
-function applyOffset(thread, i)
+function applyOffset(threadElement)
 {
-    var deg = thread[i][1]/180*Math.PI;
+    var deg = threadElement.deg/180*Math.PI;
     var x = Math.sin(deg)*THREAD_DIST;
     var y = -Math.cos(deg)*THREAD_DIST;
     
-    var newX = thread[i][0].pos[0]+x;
-    var newY = thread[i][0].pos[1]+y;
+    var newX = threadElement.branch.pos[0]+x;
+    var newY = threadElement.branch.pos[1]+y;
 
     return [newX, newY];
 }
@@ -312,14 +357,14 @@ function calcPathCoord(thread, i)
     var dStr = '';
     if (i > 0)
     {   
-        var next = applyOffset(thread, i);
-        var x = applyOffset(thread, i-1)[0];
+        var next = applyOffset(thread[i]);
+        var x = applyOffset(thread[i-1])[0];
         x = next[0]+(x-next[0])/2;
         dStr = toSvgDString([[x,next[1]],next], ['Q', ',']);
     }
     else
     {
-        dStr = toSvgDString([applyOffset(thread, 0)], ['M']);
+        dStr = toSvgDString([applyOffset(thread[0])], ['M']);
     }
     return dStr;
 }
@@ -373,10 +418,9 @@ function makeTextPath(isReversed, startAt, threadId)
     return textPath;
 }
 
-function makeTooltip(thread, i) 
+function makeTooltip(lemma) 
 {
     var title = svgElement('title');
-    var lemma = thread[i][0].lemmata[thread[i][2]];
     title.innerHTML = data.langs[lemma.l][LANG];
     var transcription = lemma[LANG];
     if (transcription.length > 0)
@@ -385,14 +429,13 @@ function makeTooltip(thread, i)
     return title;
 }
 
-function makeTspan(thread, i)
+function makeTspan(lemma)
 {
-    var lemma = thread[i][0].lemmata[thread[i][2]];
     var span = svgElement('tspan');
     span.setAttribute('fill', lemma.color);
     span.setAttribute('dy', '2');
     span.innerHTML = lemma.w+'&nbsp;&nbsp;&nbsp;';
-    span.appendChild(makeTooltip(thread, i));
+    span.appendChild(makeTooltip(lemma));
     return span;
 }
 
@@ -408,9 +451,11 @@ function drawThread(thread)
     for (var i=0;i<thread.length;i++)
     {
         dStr += calcPathCoord(thread, i);
-        if (thread[i][0].lemmata == undefined || thread[i][0].lemmata.length <= thread[i][2]) continue;
-        var span = makeTspan(thread, i);
-        textPath.appendChild(span);
+        for (var j=0;j<thread[i].lemmata.length;j++)
+        {
+            var span = makeTspan(thread[i].lemmata[j]);
+            textPath.appendChild(span);
+        }        
     }
 
     path.setAttribute('d', dStr);    
