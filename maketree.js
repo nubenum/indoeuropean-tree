@@ -80,20 +80,19 @@ var data = {
         ]
     },
     "langs" : {
-        "pio" : {"en":"Indoeropean", "de":"Indoeuropäisch", "fr":"Indoeuropéen"},
+        "pio" : {"en":"Indoeuropean", "de":"Indoeuropäisch", "fr":"Indoeuropéen"},
         "pge" : {"en":"Proto-Germanic", "de":"Urgermanisch", "fr":"Proto-germanique"},
         "en" : {"en":"English", "de":"Englisch", "fr":"Anglais"},
-        "de" : {"en":"German", "de":"Deutsch", "fr":"French"},
-        "fr" : {"en":"", "de":"", "fr":""},
-        "es" : {"en":"", "de":"", "fr":""},
-        "la" : {"en":"", "de":"", "fr":""},
-        "uk" : {"en":"Batko", "de":"Batko", "fr":"Batko"},
-        "el" : {"en":"patéras", "de":"patéras", "fr":"patéras"},
-        "ga" : {"en":"", "de":"", "fr":""},
-        "fa" : {"en":"pedr", "de":"pedr", "fr":"pedr"},
-        "cy" : {"en":"", "de":"", "fr":""},
-        "ru" : {"en":"", "de":"", "fr":""},
-
+        "de" : {"en":"German", "de":"Deutsch", "fr":"Allemand"},
+        "fr" : {"en":"French", "de":"Französisch", "fr":"Français"},
+        "es" : {"en":"Spanish", "de":"Spanisch", "fr":"Espagnol"},
+        "la" : {"en":"Latin", "de":"Latein", "fr":"Latin"},
+        "uk" : {"en":"Ukrainian", "de":"Ukrainisch", "fr":"Ukrainien"},
+        "el" : {"en":"Greek", "de":"Griechisch", "fr":"Grec"},
+        "ga" : {"en":"Gaelic/Irish", "de":"Gälisch/Irisch", "fr":"Gaélique"},
+        "fa" : {"en":"Persian/Farsi", "de":"Persisch/Farsi", "fr":"Perse/Farsi"},
+        "cy" : {"en":"Welsh", "de":"Walisisch", "fr":"Gallois"},
+        "ru" : {"en":"Russian", "de":"Russisch", "fr":"Russe"}
     }
 }
 
@@ -103,6 +102,7 @@ TRUNK_HEIGHT = 200;
 CROWN_SIZE = 200;
 TREE_SPREAD_DEG = 200;
 
+LANG = 'en';
 var svg;
 var defs;
 
@@ -150,8 +150,8 @@ function fillTreeWithLemmata(branch, depth)
 {
     var neededLemmata = Math.max(TRUNK_LEMMATA - depth, 1);
     
-    branch.lemmata = getRandomLemmataForLang(branch.l, neededLemmata);
-    //branch.lemmata = getAllLemmataForLang(branch.l);
+    //branch.lemmata = getRandomLemmataForLang(branch.l, neededLemmata);
+    branch.lemmata = getAllLemmataForLang(branch.l);
     
     if (!branch.langs) return;
     for (var i=0;i<branch.langs.length;i++)
@@ -373,14 +373,26 @@ function makeTextPath(isReversed, startAt, threadId)
     return textPath;
 }
 
+function makeTooltip(thread, i) 
+{
+    var title = svgElement('title');
+    var lemma = thread[i][0].lemmata[thread[i][2]];
+    title.innerHTML = data.langs[lemma.l][LANG];
+    var transcription = lemma[LANG];
+    if (transcription.length > 0)
+        title.innerHTML += ' ('+transcription+')';
+    
+    return title;
+}
+
 function makeTspan(thread, i)
 {
     var lemma = thread[i][0].lemmata[thread[i][2]];
     var span = svgElement('tspan');
     span.setAttribute('fill', lemma.color);
     span.setAttribute('dy', '2');
-    span.innerHTML = '&nbsp;&nbsp;&nbsp;'+lemma.w;
-
+    span.innerHTML = lemma.w+'&nbsp;&nbsp;&nbsp;';
+    span.appendChild(makeTooltip(thread, i));
     return span;
 }
 
@@ -421,7 +433,7 @@ function initSvg()
     defs = svgElement('defs');
 
     svg.appendChild(defs);
-    //defs = svg;
+    defs = svg;
     document.body.appendChild(svg);
 }
 
