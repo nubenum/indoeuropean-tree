@@ -94,14 +94,10 @@ function makeTextPath(isReversed, startAt, threadId)
     return textPath;
 }
 
-function makeTooltip(lemma) 
+function makeTooltip(explanation) 
 {
     var title = svgElement('title');
-    title.innerHTML = data.langs[lemma.l][LANG];
-    var transcription = lemma[LANG];
-    if (transcription.length > 0)
-        title.innerHTML += ' ('+transcription+')';
-    
+    title.innerHTML = explanation;    
     return title;
 }
 
@@ -111,7 +107,10 @@ function makeTspan(lemma)
     span.setAttribute('fill', lemma.color);
     span.setAttribute('dy', '2');
     span.innerHTML = '&nbsp;'+lemma.w+'&nbsp;';
-    span.appendChild(makeTooltip(lemma));
+    
+    var explanation = makeExplanation(lemma);
+    span.setAttribute('onclick', "setExplanationText('"+explanation+"')");
+    span.appendChild(makeTooltip(explanation));
     return span;
 }
 
@@ -146,12 +145,15 @@ function svgElement(name)
 
 function initSvg()
 {
-    svg = svgElement('svg');
+    svg = document.getElementById('tree');
     svg.setAttribute('width', CROWN_SIZE*2);
     svg.setAttribute('height', CROWN_SIZE+TRUNK_HEIGHT);
     defs = svgElement('defs');
 
     svg.appendChild(defs);
     if (DEBUG) defs = svg;
-    document.body.appendChild(svg);
+}
+
+function setExplanationText(text) {
+    document.getElementById('explanation').innerHTML = text;
 }

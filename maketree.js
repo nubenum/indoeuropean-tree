@@ -233,6 +233,26 @@ function applyOffset(threadElement)
     return [newX, newY];
 }
 
+function makeExplanation(lemma)
+{
+    var lang = data.langs[lemma.l][LANG];
+
+    var text = lemma[LANG];
+    if (text.length > 0)
+    {
+        text = ' ('+text+')';
+    }
+
+
+    var shift = lemma.sh;
+    if (shift.length > 0)
+    {
+        shift = ' ' + DICT.shift[LANG] + ' ' + lemma.sh.replace('->', '→') + '.';
+    }
+    
+    return lemma.w + text + ': ' + lang + '.' + shift;
+}
+
 function drawTree()
 {
     initSvg();

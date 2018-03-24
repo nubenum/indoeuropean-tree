@@ -3,97 +3,126 @@ var data = {
         {
             "color": "indigo",
             "langs": [
-                {"l":"pio", "w":"*pH₂tér", "en":"", "de":"", "fr":""},
-                {"l":"pge", "w":"*fader-", "en":"", "de":"Die germanischen Sprachen unterlagen einer Lautverschiebung von p nach f.", "fr":""},
-                {"l":"en", "w":"father", "en":"", "de":"", "fr":""},
-                {"l":"de", "w":"Vater", "en":"", "de":"", "fr":""},
-                {"l":"fr", "w":"père", "en":"", "de":"", "fr":""},
-                {"l":"es", "w":"padre", "en":"", "de":"", "fr":""},
-                {"l":"la", "w":"pater", "en":"", "de":"", "fr":""},
-                {"l":"psl", "w":"*batę", "en":"", "de":"", "fr":""},                
-                {"l":"ru", "w":"батя", "en":"batja", "de":"batja", "fr":"batja"},
-                {"l":"uk", "w":"батько", "en":"batko", "de":"batko", "fr":"batko"},
-                {"l":"el", "w":"πατέρας", "en":"patéras", "de":"patéras", "fr":"patéras"},
-                {"l":"ga", "w":"athair", "en":"", "de":"", "fr":""},
-                {"l":"fa", "w":"پدر", "en":"pedr", "de":"pedr", "fr":"pedr"}
+                {"l":"pio", "w":"*pH₂tér", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"pge", "w":"*fader-", "en":"", "de":"", "fr":"", "sh":"p -> f"},
+                {"l":"en", "w":"father", "en":"", "de":"", "fr":"", "sh":"p -> f"},
+                {"l":"de", "w":"Vater", "en":"", "de":"", "fr":"", "sh":"p -> f"},
+                {"l":"fr", "w":"père", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"es", "w":"padre", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"la", "w":"pater", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"psl", "w":"*batę", "en":"", "de":"", "fr":"", "sh":""},                
+                {"l":"ru", "w":"батя", "en":"batja", "de":"batja", "fr":"batja", "sh":""},
+                {"l":"uk", "w":"батько", "en":"batko", "de":"batko", "fr":"batko", "sh":""},
+                {"l":"el", "w":"πατέρας", "en":"patéras", "de":"patéras", "fr":"patéras", "sh":""},
+                {"l":"ga", "w":"athair", "en":"", "de":"", "fr":"", "sh":"p -> -"},
+                {"l":"fa", "w":"پدر", "en":"pedr", "de":"pedr", "fr":"pedr", "sh":""}
             ]
         },
         {
             "color": "orange",
             "langs": [
-                {"l":"pio", "w":"*k̂won-", "en":"", "de":"", "fr":""},
-                {"l":"pge", "w":"*hunda-", "en":"", "de":"", "fr":""},
-                {"l":"en", "w":"hound", "en":"", "de":"", "fr":""},
-                {"l":"de", "w":"Hund", "en":"", "de":"", "fr":""},
-                {"l":"fr", "w":"chien", "en":"", "de":"", "fr":""},
-                {"l":"la", "w":"canis", "en":"", "de":"", "fr":""},
-                {"l":"el", "w":"κύων", "en":"kúōn", "de":"kúōn", "fr":"kúōn"},
-                {"l":"cy", "w":"ci", "en":"", "de":"", "fr":""},
-                {"l":"ga", "w":"cù", "en":"", "de":"", "fr":""}
+                {"l":"pio", "w":"*k̂won-", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"pge", "w":"*hunda-", "en":"", "de":"", "fr":"", "sh":"k/c -> h"},
+                {"l":"en", "w":"hound", "en":"", "de":"", "fr":"", "sh":"k/c -> h"},
+                {"l":"de", "w":"Hund", "en":"", "de":"", "fr":"", "sh":"k/c -> h"},
+                {"l":"fr", "w":"chien", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"la", "w":"canis", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"el", "w":"κύων", "en":"kúōn", "de":"kúōn", "fr":"kúōn", "sh":""},
+                {"l":"cy", "w":"ci", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"ga", "w":"cù", "en":"", "de":"", "fr":"", "sh":""}
             ]
         },
         {
-            "color": "firebrick",
+            "color": "crimson",
             "langs": [
-                {"l":"pio", "w":"*k̂erd-", "en":"", "de":"", "fr":""},
-                {"l":"pge", "w":"*herton-", "en":"", "de":"", "fr":""},
-                {"l":"en", "w":"heart", "en":"", "de":"", "fr":""},
-                {"l":"de", "w":"Herz", "en":"", "de":"", "fr":""},
-                {"l":"fr", "w":"cœur", "en":"", "de":"", "fr":""},
-                {"l":"es", "w":"corazón", "en":"", "de":"", "fr":""},
-                {"l":"la", "w":"cor", "en":"", "de":"", "fr":""},
-                {"l":"ru", "w":"сердце", "en":"serdce", "de":"serdce", "fr":"serdce"},
-                {"l":"pl", "w":"serce", "en":"", "de":"", "fr":""},
-                {"l":"el", "w":"καρδιά", "en":"kardiá", "de":"kardiá", "fr":"kardiá"}
+                {"l":"pio", "w":"*k̂erd-", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"pge", "w":"*herton-", "en":"", "de":"", "fr":"", "sh":"k/c -> h"},
+                {"l":"en", "w":"heart", "en":"", "de":"", "fr":"", "sh":"k/c -> h"},
+                {"l":"de", "w":"Herz", "en":"", "de":"", "fr":"", "sh":"k/c -> h"},
+                {"l":"fr", "w":"cœur", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"es", "w":"corazón", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"la", "w":"cor", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"ru", "w":"сердце", "en":"serdce", "de":"serdce", "fr":"serdce", "sh":""},
+                {"l":"pl", "w":"serce", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"el", "w":"καρδιά", "en":"kardiá", "de":"kardiá", "fr":"kardiá", "sh":""}
             ]
         },
         {
             "color": "lightsteelblue",
             "langs": [
-                {"l":"pio", "w":"*dwóH₁", "en":"", "de":"", "fr":""},
-                {"l":"pge", "w":"*twa- ", "en":"", "de":"", "fr":""},
-                {"l":"en", "w":"two", "en":"", "de":"", "fr":""},
-                {"l":"de", "w":"zwei", "en":"", "de":"", "fr":""},
-                {"l":"fr", "w":"deux", "en":"", "de":"", "fr":""},
-                {"l":"es", "w":"dos", "en":"", "de":"", "fr":""},
-                {"l":"la", "w":"duo", "en":"", "de":"", "fr":""},
-                {"l":"el", "w":"δύο", "en":"duo", "de":"duo", "fr":"duo"},
-                {"l":"ru", "w":"два", "en":"dva", "de":"dva", "fr":"dva"},
-                {"l":"pl", "w":"dwa", "en":"", "de":"", "fr":""},                             
-                {"l":"ga", "w":"dà", "en":"", "de":"", "fr":""},
-                {"l":"cy", "w":"dó", "en":"", "de":"", "fr":""},
-                {"l":"fa", "w":"دو", "en":"dw", "de":"dw", "fr":"dw"}
+                {"l":"pio", "w":"*dwóH₁", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"pge", "w":"*twa- ", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"en", "w":"two", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"de", "w":"zwei", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"fr", "w":"deux", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"es", "w":"dos", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"la", "w":"duo", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"el", "w":"δύο", "en":"duo", "de":"duo", "fr":"duo", "sh":""},
+                {"l":"ru", "w":"два", "en":"dva", "de":"dva", "fr":"dva", "sh":""},
+                {"l":"pl", "w":"dwa", "en":"", "de":"", "fr":"", "sh":""},                             
+                {"l":"ga", "w":"dà", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"cy", "w":"dó", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"fa", "w":"دو", "en":"dw", "de":"dw", "fr":"dw", "sh":""}
             ]
         },
         {
             "color": "mediumorchid",
             "langs": [
-                {"l":"pio", "w":"*h₂ébōl", "en":"", "de":"", "fr":""},
-                {"l":"pge", "w":"*apluz", "en":"", "de":"", "fr":""},
-                {"l":"en", "w":"apple", "en":"", "de":"", "fr":""},
-                {"l":"de", "w":"Apfel", "en":"", "de":"", "fr":""},
-                {"l":"ru", "w":"яблоко", "en":"dva", "de":"dva", "fr":"dva"},
-                {"l":"pl", "w":"jabłko", "en":"", "de":"", "fr":""},               
-                {"l":"psl", "w":"ѧблоко", "en":"", "de":"", "fr":""},        
-                {"l":"ga", "w":"ubhal", "en":"", "de":"", "fr":""},
-                {"l":"cy", "w":"ubhal", "en":"", "de":"", "fr":""},
-                {"l":"pce", "w":"*abalo-", "en":"", "de":"", "fr":""}
+                {"l":"pio", "w":"*h₂ébōl", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"pge", "w":"*apluz", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"en", "w":"apple", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"de", "w":"Apfel", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"ru", "w":"яблоко", "en":"dva", "de":"dva", "fr":"dva", "sh":""},
+                {"l":"pl", "w":"jabłko", "en":"", "de":"", "fr":"", "sh":""},               
+                {"l":"psl", "w":"ѧблоко", "en":"", "de":"", "fr":"", "sh":""},        
+                {"l":"ga", "w":"ubhal", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"cy", "w":"ubhal", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"pce", "w":"*abalo-", "en":"", "de":"", "fr":"", "sh":""}
             ]
         },
         {
             "color": "seagreen",
             "langs": [
-                {"l":"pio", "w":"*ǵnéwo-", "en":"", "de":"", "fr":""},
-                {"l":"pge", "w":"*knewą", "en":"", "de":"", "fr":""},
-                {"l":"en", "w":"knee", "en":"", "de":"", "fr":""},
-                {"l":"de", "w":"Knie", "en":"", "de":"", "fr":""},  
-                {"l":"fr", "w":"genou", "en":"", "de":"", "fr":""},
-                {"l":"la", "w":"genu", "en":"", "de":"", "fr":""},
-                {"l":"el", "w":"γόνατο", "en":"gónato", "de":"gónato", "fr":"gónato"},
-                {"l":"ga", "w":"glùn", "en":"", "de":"", "fr":""},
-                {"l":"cy", "w":"glúin", "en":"", "de":"", "fr":""},
-                {"l":"pce", "w":"*gnūnos", "en":"", "de":"", "fr":""},
-                {"l":"fa", "w":"زانو", "en":"zanu", "de":"zanu", "fr":"zanu"}
+                {"l":"pio", "w":"*ǵnéwo-", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"pge", "w":"*knewą", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"en", "w":"knee", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"de", "w":"Knie", "en":"", "de":"", "fr":"", "sh":""},  
+                {"l":"fr", "w":"genou", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"la", "w":"genu", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"el", "w":"γόνατο", "en":"gónato", "de":"gónato", "fr":"gónato", "sh":""},
+                {"l":"ga", "w":"glùn", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"cy", "w":"glúin", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"pce", "w":"*gnūnos", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"fa", "w":"زانو", "en":"zanu", "de":"zanu", "fr":"zanu", "sh":""}
+            ]
+        },
+        {
+            "color": "saddlebrown",
+            "langs": [
+                {"l":"pio", "w":"*pélh₁us", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"pge", "w":"*feluz", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"de", "w":"viele", "en":"", "de":"", "fr":"", "sh":""},  
+                {"l":"fr", "w":"plus", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"la", "w":"plus", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"el", "w":"πολύς", "en":"polús", "de":"polús", "fr":"polús", "sh":""}
+            ]
+        },
+        {
+            "color": "burlywood",
+            "langs": [
+                {"l":"pio", "w":"*dʰwer-", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"pge", "w":"*durz", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"en", "w":"door", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"de", "w":"Tür", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"la", "w":"forum", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"el", "w":"θύρα", "en":"thýra", "de":"thýra", "fr":"thýra", "sh":""},
+                {"l":"ru", "w":"дверь", "en":"dverʹ", "de":"dverʹ", "fr":"dverʹ", "sh":""},
+                {"l":"pl", "w":"drzwi", "en":"", "de":"", "fr":"", "sh":""},               
+                {"l":"psl", "w":"*dvьrь", "en":"", "de":"", "fr":"", "sh":""},        
+                {"l":"ga", "w":"doras", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"cy", "w":"doras", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"pce", "w":"*dworā", "en":"", "de":"", "fr":"", "sh":""},
+                {"l":"fa", "w":"در", "en":"dar", "de":"dar", "fr":"dar", "sh":""}
             ]
         }
     ],
@@ -123,7 +152,7 @@ var data = {
                     {
                         "l": "psl" ,
                         "langs": [
-                            {"l": "uk"},  {"l": "ru"}
+                            {"l": "pl"},  {"l": "ru"}
                         ]
                     },
                     {"l": "el"},            
@@ -147,10 +176,14 @@ var data = {
         "pce" : {"en":"Proto-Celtic", "de":"Protokeltisch", "fr":"Proto-celtique"},
         "ru" : {"en":"Russian", "de":"Russisch", "fr":"Russe"},
         "uk" : {"en":"Ukrainian", "de":"Ukrainisch", "fr":"Ukrainien"},
-        "uk" : {"en":"Polnish", "de":"Polnisch", "fr":"Polonais"},
+        "pl" : {"en":"Polish", "de":"Polnisch", "fr":"Polonais"},
         "psl" : {"en":"Proto-Slavic", "de":"Protoslawisch", "fr":"Proto-slave"}
     }
 }
+
+DICT = {
+    "shift": {"en": "Consonant shift", "fr": "Mutation consonantique", "de": "Lautverschiebung"}
+};
 
 DEBUG = false;
 GLYPH_SIZE = 8;
