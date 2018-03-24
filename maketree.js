@@ -152,9 +152,11 @@ var data = {
     }
 }
 
+DEBUG = false;
 GLYPH_SIZE = 8;
-TRUNK_LEMMATA = 3;
-THREAD_DIST = 50;
+TRUNK_LEMMATA = 4;
+THREAD_DIST = 40;
+THREAD_DEG_INTERVAL = 20;
 TRUNK_HEIGHT = 200;
 CROWN_SIZE = 200;
 TREE_SPREAD_DEG = 200;
@@ -224,12 +226,14 @@ function getLeaves(branch) {
     return leaves;
 }
 
-function drawDot(x, y)
+function drawDot(x, y, color)
 {
+    if (!DEBUG) return;
     var dot = svgElement('circle');
     dot.setAttribute('r', '5');
     dot.setAttribute('cx', x);
     dot.setAttribute('cy', y);
+    dot.setAttribute('fill', color);
     svg.appendChild(dot);
 }
 
@@ -241,7 +245,7 @@ function calcLeavesPos(branch) {
         var x = Math.sin(degPos)*CROWN_SIZE+CROWN_SIZE;
         var y = CROWN_SIZE-Math.cos(degPos)*CROWN_SIZE;
         leaves[i].pos = [x, y];   
-        //drawDot(x,y);     
+        drawDot(x,y,'black');     
     }
 }
 
@@ -279,7 +283,7 @@ function calcBranchPos(branch)
         branch.langs[i].dist = euklidianDist(branch.langs[i].pos, branch.pos);
     }
 
-    //drawDot(branch.pos[0], branch.pos[1]);
+    drawDot(branch.pos[0], branch.pos[1], 'black');
 }
 
 function calcTreePos()
@@ -295,7 +299,7 @@ function getContinuousThreadsInterval(branch, threadCountPerBranch)
     return Math.max(Math.floor(distBetweenThreads), 1);
 }
 
-function fillUpThreads(branch, continuousThreads, threadCountPerBranch, threadDeg, degDistance)
+function fillUpThreads(branch, continuousThreads, threadCountPerBranch, threadDeg)
 {
     var lemmata;
     var lemmataCount = 0;
@@ -304,7 +308,7 @@ function fillUpThreads(branch, continuousThreads, threadCountPerBranch, threadDe
         lemmata = fillDistWithLemmata(branch, lemmataCount);
         lemmataCount += lemmata.length;
         continuousThreads.push([{"branch" : branch, "deg" : threadDeg, "lemmata": lemmata}]);
-        threadDeg += degDistance;
+        threadDeg += THREAD_DEG_INTERVAL;
     }
     return continuousThreads;   
 }
@@ -334,24 +338,22 @@ function fillDistWithLemmata(branch, start)
     return lemmata;
 }
 
-function drawBranches(branch, threadCountPerBranch)
-{
-    var degDistance = TREE_SPREAD_DEG/10;
-   
+function drawThreads(branch, threadCountPerBranch, threadDeg)
+{   
     var continuousThreads = [];
     if (!branch.langs) 
     {
-        return fillUpThreads(branch, continuousThreads, threadCountPerBranch, 0, degDistance);         
+        return fillUpThreads(branch, continuousThreads, threadCountPerBranch, 0);         
     }
     
     var continuousThreadsInterval = getContinuousThreadsInterval(branch, threadCountPerBranch);
-    var threadDeg = -degDistance * (threadCountPerBranch*branch.langs.length-1) / 2;
+    threadDeg += -THREAD_DEG_INTERVAL * ((threadCountPerBranch-1)*branch.langs.length-1) / 2;
     var lemmata;
     var lemmataCount = 0;
 
     for (var i=0;i<branch.langs.length;i++)
     {
-        var threads = drawBranches(branch.langs[i], Math.max(threadCountPerBranch-1, 1), threadDeg);
+        var threads = drawThreads(branch.langs[i], Math.max(threadCountPerBranch-1, 1), 0);
         
         for(var j=0;j<threads.length;j++)
         {            
@@ -367,7 +369,7 @@ function drawBranches(branch, threadCountPerBranch)
                 threads[j].push({"branch" : branch, "deg" : threadDeg, "lemmata": []});
                 drawThread(threads[j]);
             }
-            threadDeg += degDistance;
+            threadDeg += THREAD_DEG_INTERVAL;
         }
     }
     return continuousThreads;
@@ -395,29 +397,54 @@ function orderBranch(thread)
 
 function applyOffset(threadElement)
 {
-    var deg = threadElement.deg/180*Math.PI;
+    var xDiff = data.tree.pos[0]-threadElement.branch.pos[0];
+    var yDiff = data.tree.pos[1]-threadElement.branch.pos[1];
+    var branchDeg = 0;
+    if (yDiff != 0)
+    {
+        branchDeg = Math.atan(xDiff/yDiff);
+    }
+    
+    var deg = threadElement.deg/180*Math.PI-branchDeg;
     var x = Math.sin(deg)*THREAD_DIST;
     var y = -Math.cos(deg)*THREAD_DIST;
     
     var newX = threadElement.branch.pos[0]+x;
     var newY = threadElement.branch.pos[1]+y;
 
+    var relativeDist = euklidianDist(threadElement.branch.pos, data.tree.pos)/THREAD_DIST;
+    if (relativeDist != 0)
+    {
+        newX += xDiff/relativeDist;
+        newY += yDiff/relativeDist;
+    }
+    else
+    {
+        newY += THREAD_DIST;
+    }
     return [newX, newY];
 }
 
 function calcPathCoord(thread, i)
 {
     var dStr = '';
+    var next = applyOffset(thread[i]);
     if (i > 0)
     {   
-        var next = applyOffset(thread[i]);
-        var x = applyOffset(thread[i-1])[0];
-        x = next[0]+(x-next[0])/2;
-        dStr = toSvgDString([[x,next[1]],next], ['Q', ',']);
+        var last = applyOffset(thread[i-1]);
+        var x = (last[0]+next[0])/2;
+        var y = (last[1]+next[1])/2;
+        dStr = toSvgDString([last,[x,y]], ['S', ',']);
+        if (i+1 == thread.length)
+        {
+            dStr += toSvgDString([next], ['T']);
+        }
+        drawDot(x,y, 'red');
+        drawDot(next[0],next[1], 'green');
     }
     else
     {
-        dStr = toSvgDString([applyOffset(thread[0])], ['M']);
+        dStr = toSvgDString([next], ['M']);
     }
     return dStr;
 }
@@ -463,8 +490,8 @@ function makeTextPath(isReversed, startAt, threadId)
         set.setAttribute('to', '-100%');
     }
     
-    //textPath.appendChild(animate);
-    //if (startAt > 0) textPath.appendChild(set);
+    textPath.appendChild(animate);
+    if (startAt > 0) textPath.appendChild(set);
     text.appendChild(textPath);
     svg.appendChild(text);
 
@@ -487,7 +514,7 @@ function makeTspan(lemma)
     var span = svgElement('tspan');
     span.setAttribute('fill', lemma.color);
     span.setAttribute('dy', '2');
-    span.innerHTML = lemma.w+'&nbsp;&nbsp;&nbsp;';
+    span.innerHTML = '&nbsp;'+lemma.w+'&nbsp;';
     span.appendChild(makeTooltip(lemma));
     return span;
 }
@@ -525,13 +552,12 @@ function svgElement(name)
 function initSvg()
 {
     svg = svgElement('svg');
-    //svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     svg.setAttribute('width', CROWN_SIZE*2);
     svg.setAttribute('height', CROWN_SIZE+TRUNK_HEIGHT);
     defs = svgElement('defs');
 
     svg.appendChild(defs);
-    //defs = svg;
+    if (DEBUG) defs = svg;
     document.body.appendChild(svg);
 }
 
@@ -542,7 +568,7 @@ function drawTree()
     calcTreePos();
     console.log(data.tree);
     
-    drawBranches(data.tree, TRUNK_LEMMATA, 0);
+    drawThreads(data.tree, TRUNK_LEMMATA, 0);
 }
 
 
