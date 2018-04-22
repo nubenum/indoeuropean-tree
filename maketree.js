@@ -247,7 +247,7 @@ function makeExplanation(lemma)
     var shift = lemma.sh;
     if (shift.length > 0)
     {
-        shift = ' ' + DICT.shift[LANG] + ' ' + lemma.sh.replace('->', '→') + '.';
+        shift = ' ' + DICT.shift[LANG] + ' ' + lemma.sh.replace(/->/g, '→') + '.';
     }
     
     return lemma.w + text + ': ' + lang + '.' + shift;

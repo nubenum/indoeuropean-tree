@@ -1,13 +1,34 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <script src="data.js"></script>
     <script src="svgdom.js"></script>
     <script src="maketree.js"></script>
+    <style>
+        body
+        {
+            margin: 0;
+        }
+        #tree
+        {
+            margin: 0 auto;
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 800px;
+        }
+        #explanation
+        {
+            margin: 20px;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
-    <svg id="tree">
+    <svg id="tree" viewBox="0 0 400 400">
         <style>
             tspan {
                 cursor: pointer;
