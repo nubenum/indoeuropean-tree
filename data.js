@@ -230,4 +230,4 @@ TRUNK_HEIGHT = 200;
 CROWN_SIZE = 200;
 TREE_SPREAD_DEG = 200;
 
-if (!LANG) LANG = 'en';
+if (typeof LANG === 'undefined') LANG = 'en';
